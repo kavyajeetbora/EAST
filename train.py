@@ -33,11 +33,11 @@ def train(train_img_path, train_gt_path, pths_path, batch_size, lr, num_workers,
 		scheduler.step()
 		epoch_loss = 0
 		epoch_time = time.time()
-		for i, (img, gt_score, gt_geo, ignored_map) in enumerate(train_loader):
+		for i, (img, gt_score, gt_geo) in enumerate(train_loader):
 			start_time = time.time()
-			img, gt_score, gt_geo, ignored_map = img.to(device), gt_score.to(device), gt_geo.to(device), ignored_map.to(device)
+			img, gt_score, gt_geo = img.to(device), gt_score.to(device), gt_geo.to(device)
 			pred_score, pred_geo = model(img)
-			loss = criterion(gt_score, pred_score, gt_geo, pred_geo, ignored_map)
+			loss = criterion(gt_score, pred_score, gt_geo, pred_geo)
 
 			epoch_loss += loss.item()
 			optimizer.zero_grad()
