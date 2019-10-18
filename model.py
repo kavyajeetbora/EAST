@@ -3,7 +3,6 @@ import torch.nn as nn
 import torch.utils.model_zoo as model_zoo
 import torch.nn.functional as F
 import math
-from torch.utils.model_zoo import load_url
 
 
 cfg = [64, 64, 'M', 128, 128, 'M', 256, 256, 256, 'M', 512, 512, 512, 'M', 512, 512, 512, 'M']
@@ -65,7 +64,7 @@ class extractor(nn.Module):
     super(extractor, self).__init__()
     vgg16_bn = VGG(make_layers(cfg, batch_norm=True))
     if pretrained:
-      state_dict = load_url('http://download.pytorch.org/models/vgg16_bn-6c64b313.pth')
+      state_dict = model_zoo.load_url('http://download.pytorch.org/models/vgg16_bn-6c64b313.pth')
       vgg16_bn.load_state_dict(state_dict)
     self.features = vgg16_bn.features
 
