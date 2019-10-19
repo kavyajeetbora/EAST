@@ -303,20 +303,21 @@ def get_score_geo(img, vertices, labels, scale, length):
 		scale   : feature map / image
 		length  : image length
 	Output:
-		score gt, geo gt
+		score gt, geo gt, ignored
 	'''
 	score_map   = np.zeros((int(img.height * scale), int(img.width * scale), 1), np.float32)
 	geo_map     = np.zeros((int(img.height * scale), int(img.width * scale), 5), np.float32)
+	ignored_map = np.zeros((int(img.height * scale), int(img.width * scale), 1), np.float32)
 
 	index = np.arange(0, length, int(1/scale))
 	index_x, index_y = np.meshgrid(index, index)
+	ignored_polys = []
 	polys = []
 
 	for i, vertice in enumerate(vertices):
-
-		# if labels[i] == 0:
-		# 	ignored_polys.append(np.around(scale * vertice.reshape((4,2))).astype(np.int32))
-		# 	continue
+		if labels[i] == 0:
+			ignored_polys.append(np.around(scale * vertice.reshape((4,2))).astype(np.int32))
+			continue
 
 		poly = np.around(scale * shrink_poly(vertice).reshape((4,2))).astype(np.int32) # scaled & shrinked
 		polys.append(poly)
@@ -344,8 +345,9 @@ def get_score_geo(img, vertices, labels, scale, length):
 		geo_map[:,:,3] += d4[index_y, index_x] * temp_mask
 		geo_map[:,:,4] += theta * temp_mask
 
+	cv2.fillPoly(ignored_map, ignored_polys, 1)
 	cv2.fillPoly(score_map, polys, 1)
-	return torch.Tensor(score_map).permute(2,0,1), torch.Tensor(geo_map).permute(2,0,1)
+	return torch.Tensor(score_map).permute(2,0,1), torch.Tensor(geo_map).permute(2,0,1), torch.Tensor(ignored_map).permute(2,0,1)
 
 
 def extract_vertices(lines):
@@ -360,12 +362,7 @@ def extract_vertices(lines):
 	vertices = []
 	for line in lines:
 		vertices.append(list(map(int,line.rstrip('\n').lstrip('\ufeff').split(',')[:8])))
-		if '##::HINDI' in line:
-			label=0
-		elif '##::ENGLISH' in line:
-			label=1
-		else:
-			label=2
+		label = 0 if '##::' in line else 1
 		labels.append(label)
 	return np.array(vertices), np.array(labels)
 
@@ -394,5 +391,5 @@ class custom_dataset(data.Dataset):
                                         transforms.ToTensor(), \
                                         transforms.Normalize(mean=(0.5,0.5,0.5),std=(0.5,0.5,0.5))])
 
-		score_map, geo_map = get_score_geo(img, vertices, labels, self.scale, self.length)
-		return transform(img), score_map, geo_map
+		score_map, geo_map, ignored_map = get_score_geo(img, vertices, labels, self.scale, self.length)
+		return transform(img), score_map, geo_map, ignored_map

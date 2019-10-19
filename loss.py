@@ -31,7 +31,7 @@ class Loss(nn.Module):
 		if torch.sum(gt_score) < 1:
 			return torch.sum(pred_score + pred_geo) * 0
 
-		classify_loss = get_dice_loss(gt_score, pred_score)
+		classify_loss = get_dice_loss(gt_score, pred_score*(1-ignored_map))
 		iou_loss_map, angle_loss_map = get_geo_loss(gt_geo, pred_geo)
 
 		angle_loss = torch.sum(angle_loss_map*gt_score) / torch.sum(gt_score)
