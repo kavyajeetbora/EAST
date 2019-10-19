@@ -362,7 +362,7 @@ def extract_vertices(lines):
 	vertices = []
 	for line in lines:
 		vertices.append(list(map(int,line.rstrip('\n').lstrip('\ufeff').split(',')[:8])))
-		label = 0 if '##::HINDI' in line else 1
+		label = 0 if '##::' in line else 1
 		labels.append(label)
 	return np.array(vertices), np.array(labels)
 
