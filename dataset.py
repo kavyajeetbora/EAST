@@ -361,7 +361,9 @@ def extract_vertices(lines):
 	labels = []
 	vertices = []
 	for line in lines:
-		x1,x2,x3,x4,y1,y2,y3,y4 = list(map(int,line.rstrip('\n').lstrip('\ufeff').split(' ')[:8]))
+		float_list = list(map(float,line.rstrip('\n').lstrip('\ufeff').split(' ')[:8]))
+		round_list = list(map(np.ceil,float_list))
+		x1,x2,x3,x4,y1,y2,y3,y4 = = list(map(int,round_list))
 		vertices.append([x1,y1,x2,y2,x3,y3,x4,y4])
 		label = 1 if len(line[8])>0 else 0
 		labels.append(label)
