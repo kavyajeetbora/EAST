@@ -155,7 +155,7 @@ def plot_boxes(img, boxes):
 
 	draw = ImageDraw.Draw(img)
 	for box in boxes:
-		draw.polygon([box[0], box[4], box[1], box[5], box[2], box[6], box[3], box[7]], outline=(0,255,0))
+		draw.polygon([box[0], box[1], box[2], box[3], box[4], box[5], box[6], box[7]], outline=(0,255,0))
 	return img
 
 
