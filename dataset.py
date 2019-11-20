@@ -367,7 +367,7 @@ def extract_vertices(lines):
 			split_char = ' '
 		
 		float_list = list(map(float,line.rstrip('\n').lstrip('\ufeff').split(split_char)[:8]))
-		round_list = list(map(np.ceil,float_list))
+		round_list = list(map(np.round,float_list))
 		x1,x2,x3,x4,y1,y2,y3,y4 = list(map(int,round_list))
 		vertices.append([x1,y1,x2,y2,x3,y3,x4,y4])
 		label = 1 if line[8] == "##::HINDI" else 0
